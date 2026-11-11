@@ -1,6 +1,14 @@
-import sys, os
+import os
+import sys
+
+# The platform runs pytest INSIDE the built image. In scenario 4 the Dockerfile
+# sets ENV SIMULATE_ANOMALY=true, which would make "/" randomly return 500 and
+# fail the tests (so the bad release would never deploy). Force healthy mode for
+# the test run only; the running container still uses the Dockerfile value.
+os.environ["SIMULATE_ANOMALY"] = "false"
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from app import app
+from app import app  # noqa: E402
 
 
 def test_health():
